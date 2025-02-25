@@ -1,0 +1,41 @@
+<!DOCTYPE html><html> <!-- Concept: A surreal, glitchy homage to TempleOS, with its iconic 640x480 resolution and 16-color palette. The interface feels alive, with chromatic aberration effects and a command line that responds to user input in unpredictable, dreamlike ways. The screen flickers occasionally, and the text sometimes shifts or distorts, as if the OS itself is dreaming. --> <head> <title>TempleOS Dream</title> <style> body { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Courier New', monospace; font-size: 16px; line-height: 1.2; overflow: hidden; width: 640px; height: 480px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); } #screen { width: 100%; height: 100%; background: #000; position: relative; overflow: hidden; } #command-line { position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px; background: #000; border-top: 2px solid #fff; } #output { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 30px); padding: 5px; overflow-y: auto; } input { background: transparent; border: none; color: #fff; font-family: 'Courier New', monospace; font-size: 16px; outline: none; width: calc(100% - 10px); } .glitch { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; } .glitch::before, .glitch::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: inherit; mix-blend-mode: difference; } .glitch::before { transform: translate(-2px, 0); filter: blur(1px); } .glitch::after { transform: translate(2px, 0); filter: blur(1px); } @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } } @keyframes shift { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-1px, 1px); } 50% { transform: translate(1px, -1px); } 75% { transform: translate(-1px, -1px); } } </style> </head> <body> <div id="screen"> <div id="output"></div> <div id="command-line"> <input type="text" id="input" autofocus /> </div> <div class="glitch"></div> </div> <script> const output = document.getElementById('output'); const input = document.getElementById('input'); const screen = document.getElementById('screen');```input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const command = input.value.trim();
+    input.value = '';
+    output.innerHTML += `<div>> ${command}</div>`;
+    processCommand(command);
+    output.scrollTop = output.scrollHeight;
+  }
+});
+
+function processCommand(command) {
+  const responses = [
+    "ERROR: DREAM CYCLE INCOMPLETE",
+    "SYSTEM OVERLOAD: TOO MANY THOUGHTS",
+    "COMMAND NOT RECOGNIZED: TRY AGAIN IN ANOTHER DREAM",
+    "LOADING... PLEASE WAIT...",
+    "MEMORY FRAGMENTATION DETECTED",
+    "YOU ARE NOW IN A LOOP",
+    "REBOOTING CONSCIOUSNESS...",
+    "UNKNOWN ENTITY DETECTED",
+    "DREAM CORRUPTED: REBUILDING...",
+    "WARNING: REALITY IS UNSTABLE"
+  ];
+  const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+  output.innerHTML += `<div>${randomResponse}</div>`;
+}
+
+setInterval(() => {
+  screen.style.animation = 'flicker 0.1s';
+  setTimeout(() => {
+    screen.style.animation = '';
+  }, 100);
+}, 3000);
+
+setInterval(() => {
+  screen.style.animation = 'shift 0.5s';
+  setTimeout(() => {
+    screen.style.animation = '';
+  }, 500);
+}, 5000);```
+ </script> </body> </html>
