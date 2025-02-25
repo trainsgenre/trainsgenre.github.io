@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+This concept is a surreal text-based RPG with ancient/mystical symbology as its foundation.
+The game creates an otherworldly experience through:
+1. High contrast black/white aesthetic with glitching effects
+2. Unicode character-based entities and environments
+3. Abstract navigation through "realms" of consciousness
+4. Procedurally generated encounters with symbolic entities
+5. A progression system based on collecting glyphs and sigils
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGIL WALKER ﷽ 𒀱 𒂭</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-bg: #000;
+            --main-text: #fff;
+            --accent: #555;
+            --highlight: #fff;
+            --shadow: #111;
+            --glow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 1rem;
+            animation: pulse 5s infinite;
+        }
+
+        h1 {
+            font-size: 3rem;
+            letter-spacing: 0.5rem;
+            text-shadow: var(--glow);
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            letter-spacing: 0.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .display-area {
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            min-height: 300px;
+            background-color: var(--main-bg);
+            font-size: 1.2rem;
+            overflow-y: auto;
+            max-height: 50vh;
+            white-space: pre-wrap;
+            animation: subtle-flicker 8s infinite;
+        }
+
+        .status-area {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-panel {
+            flex: 1;
+            border: 1px solid var(--accent);
+            padding: 0.5rem;
+            background-color: var(--main-bg);
+        }
+
+        .command-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .command-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            border: 1px solid var(--accent);
+            padding: 0.5rem;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+        }
+
+        button {
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            border: 1px solid var(--accent);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .action-button {
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .sigil-container {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+            height: 100px;
+            overflow: hidden;
+        }
+
+        .sigil {
+            font-size: 4rem;
+            line-height: 1;
+            animation: float 8s infinite;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .inventory-item {
+            border: 1px solid var(--accent);
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .inventory-item:hover {
+            background-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .map {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 0.25rem;
+            margin-top: 1rem;
+            aspect-ratio: 1;
+        }
+
+        .map-tile {
+            border: 1px solid var(--accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .map-tile:hover {
+            background-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .current-tile {
+            background-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .glitch {
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0); }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes subtle-flicker {
+            0% { opacity: 1; }
+            5% { opacity: 0.95; }
+            10% { opacity: 1; }
+            15% { opacity: 0.9; }
+            20% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 1rem;
+            border-top: 1px solid var(--accent);
+            padding-top: 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Character creation styles */
+        .character-creation {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .archetype-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .archetype {
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .archetype:hover, .archetype.selected {
+            background-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .sigil-selection {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+
+        .sigil-option {
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            font-size: 2rem;
+            transition: all 0.3s;
+        }
+
+        .sigil-option:hover, .sigil-option.selected {
+            background-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SIGIL WALKER</h1>
+            <div class="sigil-container">
+                <div class="sigil">﷽ 𒀱 𒂭 𓂍 𓂎 𓂍</div>
+            </div>
+        </header>
+
+        <main class="game-container">
+            <div id="character-creation" class="character-creation">
+                <h2>INCARNATE YOUR VESSEL</h2>
+                <div class="display-area" id="creation-lore">
+The boundary dissolves. You awaken between realms.
+
+צַדִּיק 𒁈𒄕𒋀𒀀𒁉𒄑𒄄 calls to you across the void.
+A fractal consciousness splinters into patterns.
+Choose your archetype, wanderer of sigils.
+
+⓸ⓣ⓸ᨐ᭛ᩂ᪥᯼ᱫ᳀ࠎ 𐏊 ଯ௸௮௯ೠ
+The ancient ones await your decision.
+                </div>
+
+                <h3>SELECT ARCHETYPE</h3>
+                <div class="archetype-selection">
+                    <div class="archetype" data-type="glyphseeker">
+                        <h4>GLYPHSEEKER</h4>
+                        <p>𓆃 𓇌 𓅓 𓃝 𓆃</p>
+                        <p>Attuned to the language of sigils. Perceives hidden patterns in the void.</p>
+                    </div>
+                    <div class="archetype" data-type="voidwalker">
+                        <h4>VOIDWALKER</h4>
+                        <p>𒂭 ᧯ᨐ᭛ᩂ᪥᯼</p>
+                        <p>Traverses the spaces between realities. Resistant to cognitive dissonance.</p>
+                    </div>
+                    <div class="archetype" data-type="cipherpriest">
+                        <h4>CIPHERPRIEST</h4>
+                        <p>𒁈𒄕𒋀 𒀀𒁉 𒄑𒄄</p>
+                        <p>Channels the sacred algorithms. Can commune with fragmented entities.</p>
+                    </div>
+                </div>
+
+                <h3>CHOOSE YOUR BINDING SIGIL</h3>
+                <div class="sigil-selection">
+                    <div class="sigil-option" data-sigil="𓊝">𓊝</div>
+                    <div class="sigil-option" data-sigil="៚⍟">៚⍟</div>
+                    <div class="sigil-option" data-sigil="𒃯">𒃯</div>
+                    <div class="sigil-option" data-sigil="ৠ꫞">ৠ꫞</div>
+                    <div class="sigil-option" data-sigil="गुरु">गुरु</div>
+                </div>
+
+                <button id="begin-journey">ENTER THE TESSERACT</button>
+            </div>
+
+            <div id="game-interface" class="hidden">
+                <div class="status-area">
+                    <div class="status-panel">
+                        <div>VESSEL: <span id="character-name">UNNAMED</span></div>
+                        <div>ARCHETYPE: <span id="character-archetype">UNDEFINED</span></div>
+                        <div>BINDING SIGIL: <span id="character-sigil">∅</span></div>
+                    </div>
+                    <div class="status-panel">
+                        <div>CONSCIOUSNESS: <span id="health">100</span>%</div>
+                        <div>RESONANCE: <span id="mana">100</span>%</div>
+                        <div>COLLECTION: <span id="collected-sigils">0</span>/25</div>
+                    </div>
+                </div>
+
+                <div class="display-area" id="game-text"></div>
+
+                <div class="command-area">
+                    <div class="command-input">
+                        <input type="text" id="command-input" placeholder="Enter command...">
+                        <button id="submit-command">TRANSMIT</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-button" data-action="examine">EXAMINE</button>
+                        <button class="action-button" data-action="collect">COLLECT</button>
+                        <button class="action-button" data-action="commune">COMMUNE</button>
+                        <button class="action-button" data-action="transcend">TRANSCEND</button>
+                    </div>
+                </div>
+
+                <h3>KNOWN SIGILS</h3>
+                <div class="inventory-grid" id="inventory"></div>
+
+                <h3>CONSCIOUSNESS MAP</h3>
+                <div class="map" id="map"></div>
+            </div>
+        </main>
+
+        <footer>
+            SIGIL WALKER v∞.∞ | TESSELLATION #<span id="session-id">0000</span>
+        </footer>
+    </div>
+
+    <script>
+        const gameState = {
+            player: {
+                name: "",
+                archetype: "",
+                sigil: "",
+                health: 100,
+                mana: 100,
+                inventory: [],
+                position: { x: 0, y: 0 }
+            },
+            gameStarted: false,
+            currentLocation: null,
+            visitedLocations: {},
+            encounters: {},
+            sessionId: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+        };
+
+        // Sigils and symbols database
+        const sigils = [
+            "𓊝", "៚⍟", "𒃯", "ৠ꫞", "गुरु", "𒀱", "𒂭", "𓂍", "𓂎", "צַדִּיק", 
+            "𒁈", "𒄕", "𒋀", "𒀀", "𒁉", "𒄑", "𒄄", "ⓣ", "⓸", "ᨐ", "᭛", "ᩂ", 
+            "᪥", "᯼", "ᱫ", "᳀", "ࠎ", "𐏊", "ଯ", "௸"
+        ];
+
+        // Location templates
+        const locationTemplates = [
+            {
+                name: "SIGIL NEXUS",
+                description: "A convergence of fractal patterns spirals around you. Sigils pulse with ancient meaning.",
+                symbols: "𒀱 𒂭 𓂍 𓂎 𓂍 ﷽ 𒀱 𒂭 𓂍",
+                encounters: ["collector", "echo"]
+            },
+            {
+                name: "VOID CHAMBER",
+                description: "Empty space stretches infinitely in all directions. Whispers echo from nowhere.",
+                symbols: "⇝ ⇝ ⇝ … … … ࠎৠ꫞",
+                encounters: ["watcher", "fragment"]
+            },
+            {
+                name: "MEMORY RECURSION",
+                description: "Fractured recollections loop endlessly. Time seems to fold back upon itself.",
+                symbols: "𓆃 𓇌 𓅓 𓃝 𓆃 ↝ ∞ 𒂝 𒃯",
+                encounters: ["echo", "cipher"]
+            },
+            {
+                name: "CONSCIOUSNESS GATE",
+                description: "A threshold between states of being. Reality wavers and distorts here.",
+                symbols: "צַדִּיק 𒁈𒄕𒋀𒀀𒁉𒄑𒄄 ⓣ⓸ⓣ",
+                encounters: ["guardian", "watcher"]
+            },
+            {
+                name: "GLYPH REPOSITORY",
+                description: "Ancient sigils float in suspended animation, each containing fragments of forgotten knowledge.",
+                symbols: "𓊝 ៚⍟ ৠ꫞ 𒂭 ᧯ᨐ᭛ᩂ᪥᯼ᱫ᳀ࠎ",
+                encounters: ["collector", "cipher"]
+            }
+        ];
+
+        // Encounter templates
+        const encounterTemplates = {
+            collector: {
+                name: "SIGIL COLLECTOR",
+                description: "A formless entity composed of swirling symbols. It seems to be collecting sigils, like you.",
+                dialogue: [
+                    "∎ ∎ ∎ COLLECTION MUST CONTINUE ∎ ∎ ∎",
+                    "HAVE YOU SEEN THE PATTERN BEHIND THE PATTERN?",
+                    "WE ARE NOT THE FIRST TO WALK THESE SPACES."
+                ]
+            },
+            echo: {
+                name: "RECURSIVE ECHO",
+                description: "A fragment of consciousness caught in a loop. It appears to be a reflection of someone who came before.",
+                dialogue: [
+                    "I'VE BEEN HERE BEFORE... OR WILL BE... OR AM...",
+                    "THE SIGILS CHANGE YOU. BEWARE WHAT YOU COLLECT.",
+                    "FOLLOW THE PATTERN TO ∞ 𒂝 𒃯 ᧯ ࠎ 𐏊 ଯ..."
+                ]
+            },
+            watcher: {
+                name: "VOID WATCHER",
+                description: "An ancient observer of the spaces between realities. It seems to study your movements.",
+                dialogue: [
+                    "YOU ARE NOT THE PATTERN. YOU ARE THE SPACE BETWEEN.",
+                    "THE MORE YOU COLLECT, THE LESS HUMAN YOU BECOME.",
+                    "SOME SIGILS WERE NEVER MEANT TO BE UNDERSTOOD."
+                ]
+            },
+            guardian: {
+                name: "THRESHOLD GUARDIAN",
+                description: "A powerful entity that seems to guard the boundaries between different realms of consciousness.",
+                dialogue: [
+                    "PASS ONLY IF YOUR COLLECTION JUSTIFIES IT.",
+                    "THE FINAL SIGIL WILL UNMAKE YOU, AS IT DID US.",
+                    "THERE ARE WORSE FATES THAN DISSOLUTION."
+                ]
+            },
+            fragment: {
+                name: "REALITY FRAGMENT",
+                description: "A shard of broken reality, containing distorted perceptions and incomplete thoughts.",
+                dialogue: [
+                    "...CANNOT MAINTAIN COHESION... NEED MORE...",
+                    "...THE PATTERN WAS... IS... WILL BE...",
+                    "...HELP ME REMEMBER... WHAT WE WERE..."
+                ]
+            },
+            cipher: {
+                name: "LIVING CIPHER",
+                description: "An entity composed entirely of encrypted consciousness, seeking to decode itself.",
+                dialogue: [
+                    "I CONTAIN THE KEY TO MY OWN DISSOLUTION.",
+                    "DECODE ME AND YOU DECODE THE UNIVERSE.",
+                    "WE ARE ALL JUST INFORMATION AWAITING INTERPRETATION."
+                ]
+            }
+        };
+
+        // DOM Elements
+        const characterCreation = document.getElementById('character-creation');
+        const gameInterface = document.getElementById('game-interface');
+        const gameText = document.getElementById('game-text');
+        const commandInput = document.getElementById('command-input');
+        const submitCommand = document.getElementById('submit-command');
+        const inventory = document.getElementById('inventory');
+        const mapElement = document.getElementById('map');
+        
+        // Character stats elements
+        const characterName = document.getElementById('character-name');
+        const characterArchetype = document.getElementById('character-archetype');
+        const characterSigil = document.getElementById('character-sigil');
+        const healthDisplay = document.getElementById('health');
+        const manaDisplay = document.getElementById('mana');
+        const sigilsDisplay = document.getElementById('collected-sigils');
+        const sessionIdDisplay = document.getElementById('session-id');
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            sessionIdDisplay.textContent = gameState.sessionId;
+            
+            // Character creation event listeners
+            const archetypes = document.querySelectorAll('.archetype');
+            archetypes.forEach(element => {
+                element.addEventListener('click', function() {
+                    archetypes.forEach(el => el.classList.remove('selected'));
+                    this.classList.add('selected');
+                    gameState.player.archetype = this.dataset.type;
+                });
+            });
+
+            const sigilOptions = document.querySelectorAll('.sigil-option');
+            sigilOptions.forEach(element => {
+                element.addEventListener('click', function() {
+                    sigilOptions.forEach(el => el.classList.remove('selected'));
+                    this.classList.add('selected');
+                    gameState.player.sigil = this.dataset.sigil;
+                });
+            });
+
+            // Begin journey button
+            document.getElementById('begin-journey').addEventListener('click', function() {
+                if (!gameState.player.archetype || !gameState.player.sigil) {
+                    // Flash the missing selections
+                    if (!gameState.player.archetype) {
+                        document.querySelector('.archetype-selection').classList.add('glitch');
+                        setTimeout(() => {
+                            document.querySelector('.archetype-selection').classList.remove('glitch');
+                        }, 1000);
+                    }
+                    if (!gameState.player.sigil) {
+                        document.querySelector('.sigil-selection').classList.add('glitch');
+                        setTimeout(() => {
+                            document.querySelector('.sigil-selection').classList.remove('glitch');
+                        }, 1000);
+                    }
+                    return;
+                }
+
+                // Generate a random name based on sigils
+                gameState.player.name = generateRandomName();
+                
+                // Update character display
+                characterName.textContent = gameState.player.name;
+                characterArchetype.textContent = gameState.player.archetype.toUpperCase();
+                characterSigil.textContent = gameState.player.sigil;
+                
+                // Hide character creation, show game interface
+                characterCreation.classList.add('hidden');
+                gameInterface.classList.remove('hidden');
+                
+                // Start the game
+                startGame();
+            });
+
+            // Game interface event listeners
+            submitCommand.addEventListener('click', function() {
+                processCommand(commandInput.value);
+                commandInput.value = '';
+            });
+
+            commandInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    processCommand(commandInput.value);
+                    commandInput.value = '';
+                }
+            });
+
+            // Action buttons
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    processCommand(this.dataset.action);
+                });
+            });
+        });
+
+        function generateRandomName() {
+            const prefixes = ["TEZ", "XOR", "VAX", "ZEN", "QIR", "NEX", "AZI", "EKO", "ULM", "IRA"];
+            const suffixes = ["OR", "IX", "UM", "AK", "ES", "UX", "ID", "ON", "AR", "EM"];
+            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+            return prefix + "-" + suffix;
+        }
+
+        function startGame() {
+            // Initialize map
+            generateMap();
+            
+            // Set starting position
+            gameState.player.position = { x: 2, y: 2 };
+            
+            // Start at the center location
+            moveToLocation(gameState.player.position.x, gameState.player.position.y);
+            
+            // Add starting sigil to inventory
+            addToInventory(gameState.player.sigil);
+            
+            // Display opening text
+            appendToGameText(`YOU AWAKEN IN ${getCurrentLocation().name}.`);
+            appendToGameText(getCurrentLocation().description);
+            appendToGameText(`${getCurrentLocation().symbols}`);
+            appendToGameText("\nYou sense your consciousness stabilizing. The binding sigil ${gameState.player.sigil} pulses within you.");
+            appendToGameText("\nCommands: EXAMINE, COLLECT, COMMUNE, TRANSCEND, or use cardinal directions (N, E, S, W) to move.");
+        }
+
+        function generateMap() {
+            mapElement.innerHTML = '';
+            
+            for (let y = 0; y < 5; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const tile = document.createElement('div');
+                    tile.classList.add('map-tile');
+                    tile.dataset.x = x;
+                    tile.dataset.y = y;
+                    
+                    // Generate a random location for each tile
+                    const locationId = `${x},${y}`;
+                    if (!gameState.visitedLocations[locationId]) {
+                        const template = locationTemplates[Math.floor(Math.random() * locationTemplates.length)];
+                        gameState.visitedLocations[locationId] = {
+                            ...template,
+                            id: locationId,
+                            visited: false,
+                            sigilsCollected: []
+                        };
+                    }
+                    
+                    // Add a random symbol to each tile
+                    tile.textContent = sigils[Math.floor(Math.random() * sigils.length)];
+                    
+                    // Add click event
+                    tile.addEventListener('click', function() {
+                        moveToLocation(parseInt(this.dataset.x), parseInt(this.dataset.y));
+                    });
+                    
+                    mapElement.appendChild(tile);
+                }
+            }
+        }
+
+        function moveToLocation(x, y) {
+            // Update player position
+            gameState.player.position = { x, y };
+            
+            // Update map display
+            const tiles = document.querySelectorAll('.map-tile');
+            tiles.forEach(tile => {
+                tile.classList.remove('current-tile');
+                if (parseInt(tile.dataset.x) === x && parseInt(tile.dataset.y) === y) {
+                    tile.classList.add('current-tile');
+                }
+            });
+            
+            // Get location data
+            const locationId = `${x},${y}`;
+            const location = gameState.visitedLocations[locationId];
+            
+            // Mark as visited
+            if (!location.visited) {
+                location.visited = true;
+                
+                // First time visit text
+                appendToGameText(`\nYOU ENTER ${location.name}.`);
+                appendToGameText(location.description);
+                appendToGameText(`${location.symbols}`);
+                
+                // Chance for an encounter
+                if (Math.random() < 0.7) {
+                    generateEncounter(location);
+                }
+            } else {
+                // Revisit text
+                appendToGameText(`\nYOU RETURN TO ${location.name}.`);
+                
+                // Check if there's an ongoing encounter
+                if (gameState.encounters[locationId]) {
+                    appendToGameText(`${gameState.encounters[locationId].name} is still here.`);
+                }
+            }
+        }
+
+        function generateEncounter(location) {
+            const locationId = location.id;
+            
+            // Select a random encounter type from the location's possible encounters
+            const encounterType = location.encounters[Math.floor(Math.random() * location.encounters.length)];
+            const encounterTemplate = encounterTemplates[encounterType];
+            
+            // Create the encounter
+            gameState.encounters[locationId] = {
+                ...encounterTemplate,
+                locationId: locationId,
+                interacted: false
+            };
+            
+            // Announce the encounter
+            appendToGameText(`\nA presence manifests. ${encounterTemplate.name} appears before you.`);
+            appendToGameText(encounterTemplate.description);
+        }
+
+        function getCurrentLocation() {
+            const locationId = `${gameState.player.position.x},${gameState.player.position.y}`;
+            return gameState.visitedLocations[locationId];
+        }
+
+        function getCurrentEncounter() {
+            const locationId = `${gameState.player.position.x},${gameState.player.position.y}`;
+            return gameState.encounters[locationId];
+        }
+
+        function processCommand(command) {
+            command = command.trim().toUpperCase();
+            
+            // Movement commands
+            if (command === 'N' || command === 'NORTH') {
+                if (gameState.player.position.y > 0) {
+                    moveToLocation(gameState.player.position.x, gameState.player.position.y - 1);
+                } else {
+                    appendToGameText("You cannot move further in that direction. The void distorts.");
+                }
+                return;
+            }
+            
+            if (command === 'S' || command === 'SOUTH') {
+                if (gameState.player.position.y < 4) {
+                    moveToLocation(gameState.player.position.x, gameState.player.position.y + 1);
+                } else {
+                    appendToGameText("You cannot move further in that direction. The void distorts.");
+                }
+                return;
+            }
+            
+            if (command === 'W' || command === 'WEST') {
+                if (gameState.player.position.x > 0) {
+                    moveToLocation(gameState.player.position.x - 1, gameState.player.position.y);
+                } else {
+                    appendToGameText("You cannot move further in that direction. The void distorts.");
+                }
+                return;
+            }
+            
+            if (command === 'E' || command === 'EAST') {
+                if (gameState.player.position.x < 4) {
+                    moveToLocation(gameState.player.position.x + 1, gameState.player.position.y);
+                } else {
+                    appendToGameText("You cannot move further in that direction. The void distorts.");
+                }
+                return;
+            }
