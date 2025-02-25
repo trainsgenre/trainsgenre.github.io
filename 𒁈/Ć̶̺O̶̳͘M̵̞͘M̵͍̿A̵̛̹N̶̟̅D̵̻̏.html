@@ -1,218 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- 
-Planning: This will be a retro UNIX terminal that progressively degrades into a nightmare experience.
-Key components:
-1. Terminal interface with basic UNIX commands
-2. Visual glitch effects that intensify with each command (chromatic aberration, scanlines, bitrot)
-3. Text corruption that gets worse over time
-4. Unsettling audio feedback
-5. "Entity" presence that becomes more apparent as degradation increases
-The experience should feel like the terminal is alive and malevolent, corrupting before the user's eyes.
--->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SYSTEM://TERMINAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
         :root {
             --text-color: #33ff00;
             --bg-color: #000000;
             --blur-amount: 0px;
-            --glitch-intensity: 0;
             --scan-opacity: 0.15;
             --red-offset: 0px;
             --blue-offset: 0px;
             --noise-opacity: 0.05;
             --crt-curve: 0;
         }
-
-    {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'VT323', monospace;
-      font-size: 18px;
-      line-height: 1.4;
-      height: 100vh;
-      overflow: hidden;
-      padding: 20px;
-      position: relative;
-      transition: all 0.3s ease;
-    }
-
-    #terminal {
-      height: 100%;
-      overflow-y: auto;
-      position: relative;
-      z-index: 2;
-      padding-bottom: 60px;
-    }
-
-    #input-line {
-      display: flex;
-      margin-top: 10px;
-    }
-
-    #prompt {
-      margin-right: 8px;
-    }
-
-    #cmd-input {
-      background: transparent;
-      border: none;
-      color: var(--text-color);
-      font-family: 'VT323', monospace;
-      font-size: 18px;
-      outline: none;
-      width: 100%;
-      caret-color: var(--text-color);
-    }
-
-    .output-line {
-      margin: 4px 0;
-      position: relative;
-      text-shadow: 0 0 var(--blur-amount) var(--text-color);
-    }
-
-    #crt-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 10;
-      pointer-events: none;
-      opacity: var(--noise-opacity);
-      mix-blend-mode: overlay;
-    }
-
-    #scanlines {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: repeating-linear-gradient(
-          0deg,
-          rgba(0, 0, 0, var(--scan-opacity)),
-          rgba(0, 0, 0, var(--scan-opacity)) 1px,
-          transparent 1px,
-          transparent 2px
-      );
-      z-index: 9;
-      pointer-events: none;
-    }
-
-    .chromatic-aberration {
-      position: relative;
-      display: inline-block;
-    }
-
-    .chromatic-aberration::before,
-    .chromatic-aberration::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    .chromatic-aberration::before {
-      color: rgba(255, 0, 0, 0.7);
-      transform: translateX(var(--red-offset));
-    }
-
-    .chromatic-aberration::after {
-      color: rgba(0, 0, 255, 0.7);
-      transform: translateX(var(--blue-offset));
-    }
-
-    .glitch-text {
-      position: relative;
-      display: inline-block;
-    }
-
-    #crt-frame {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      border-radius: calc(var(--crt-curve) * 100px);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.8) inset;
-      z-index: 8;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    #hidden-messages {
-      position: fixed;
-      z-index: 1;
-      opacity: 0;
-      pointer-events: none;
-      font-size: 60px;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #ff0000;
-      text-transform: uppercase;
-      letter-spacing: 8px;
-      transform: scale(1.5);
-      transition: opacity 0.2s ease;
-    }
-
-    .entity-message {
-      position: absolute;
-      opacity: 0;
-      font-family: monospace;
-      font-size: 12px;
-      color: #ff0000;
-      z-index: 7;
-      transform: rotate(var(--rotation));
-      pointer-events: none;
-      mix-blend-mode: difference;
-    }
-
-    #vignette {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(
-          circle,
-          transparent 50%,
-          rgba(0, 0, 0, 0.8) 150%
-      );
-      z-index: 7;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            line-height: 1.4;
+            height: 100vh;
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        #terminal {
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+            z-index: 2;
+            padding-bottom: 60px;
+        }
+        #input-line {
+            display: flex;
+            margin-top: 10px;
+        }
+        #prompt {
+            margin-right: 8px;
+        }
+        #cmd-input {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            outline: none;
+            width: 100%;
+            caret-color: var(--text-color);
+        }
+        .output-line {
+            margin: 4px 0;
+            position: relative;
+            text-shadow: 0 0 var(--blur-amount) var(--text-color);
+        }
+        #crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: overlay;
+        }
+        #scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, var(--scan-opacity)),
+                rgba(0, 0, 0, var(--scan-opacity)) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 9;
+            pointer-events: none;
+        }
+        .chromatic-aberration {
+            position: relative;
+            display: inline-block;
+        }
+        .chromatic-aberration::before,
+        .chromatic-aberration::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        .chromatic-aberration::before {
+            color: rgba(255, 0, 0, 0.7);
+            transform: translateX(var(--red-offset));
+        }
+        .chromatic-aberration::after {
+            color: rgba(0, 0, 255, 0.7);
+            transform: translateX(var(--blue-offset));
+        }
+        #crt-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border-radius: calc(var(--crt-curve) * 100px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8) inset;
+            z-index: 8;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        #hidden-messages {
+            position: fixed;
+            z-index: 15;
+            opacity: 0;
+            pointer-events: none;
+            font-size: 60px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            transform: scale(1.5);
+            transition: opacity 0.2s ease;
+        }
+        .entity-message {
+            position: absolute;
+            opacity: 0;
+            font-family: monospace;
+            font-size: 12px;
+            color: #ff0000;
+            z-index: 7;
+            transform: rotate(var(--rotation));
+            pointer-events: none;
+            mix-blend-mode: difference;
+            transition: opacity 0.5s ease;
+        }
+        #vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(
+                circle,
+                transparent 50%,
+                rgba(0, 0, 0, 0.8) 150%
+            );
+            z-index: 7;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
     </style>
-    </head>
-    <body>
+</head>
+<body>
     <div id="terminal">
-    <div class="output-line">UNIX System V Release 4.0 (localhost) (tty01)</div>
-    <div class="output-line">Last login: Tue Feb 25 03:17:09 from unknown</div>
-    <div class="output-line"># SYSTEM NOTICE: Routine maintenance scheduled at 0600.</div>
-    <div class="output-line"># WARNING: Unauthorized access will be prosecuted.</div>
-    <div class="output-line">$</div>
-    <div id="input-line">
-      <span id="prompt">$</span>
-      <input type="text" id="cmd-input" autofocus autocomplete="off" spellcheck="false">
-    </div>
+        <div class="output-line">UNIX System V Release 4.0 (localhost) (tty01)</div>
+        <div class="output-line">Last login: Tue Feb 25 03:17:09 from unknown</div>
+        <div class="output-line"># SYSTEM NOTICE: Routine maintenance scheduled at 0600.</div>
+        <div class="output-line"># WARNING: Unauthorized access will be prosecuted.</div>
+        <div class="output-line">$</div>
+        <div id="input-line">
+            <span id="prompt">$</span>
+            <input type="text" id="cmd-input" autofocus autocomplete="off" spellcheck="false">
+        </div>
     </div>
 
     <div id="scanlines"></div>
@@ -234,485 +201,478 @@ The experience should feel like the terminal is alive and malevolent, corrupting
 
     // Entity messages
     const entityMessages = [
-      "I see you.",
-      "Why are you still trying?",
-      "This system belongs to me now.",
-      "Your persistence is amusing.",
-      "01011001 01001111 01010101 00100000 01000011 01000001 01001110 01001110 01001111 01010100 00100000 01000101 01010011 01000011 01000001 01010000 01000101",
-      "ᴛʜᴇʀᴇ ɪs ɴᴏ ᴇsᴄᴀᴘᴇ",
-      "T̷̳̘̣͍H̶̼͐̎̉̂̿E̴̥̞͖̿̓͌̕ ̵̞͐͋S̷̨͉̱̬̀̊̎͜Y̴͍̐͒͠S̷̖̰̠̍̔̐̎͝T̴̡̄̉̌̓͝Ẹ̴͔̲̗̗̑̔̎M̵̛̳̬͙̗̊̏͠ ̵̨̛̲̞̆̾̈́̚Ḯ̴̥̗̘̖̓́S̵̰͗ ̷̝̤̳̒͜C̸̳̲̹̀̓Ǫ̶̨̠͍̪̃̋̿R̶̼̆͋̔͐͗R̵͇̭̓͠U̶̦̍̅Ṕ̶̦̍̇̑̄T̵̙̏Ę̴̫̓D̴̤͍͖̜͇͌͂̇"
+        "I see you", "Why are you still trying?", "This system belongs to me now",
+        "Your persistence is amusing", "01011001 01001111 01010101 00100000 01000011 01000001 01001110 01001110 01001111 01010100",
+        "ᴛʜᴇʀᴇ ɪs ɴᴏ ᴇsᴄᴀᴘᴇ", "THE SYSTEM IS CORRUPTED"
     ];
 
     // Hidden subliminal messages
     const subliminialMessages = [
-      "SURRENDER",
-      "OBEY",
-      "GIVE UP",
-      "TOO LATE",
-      "DIE",
-      "NO ESCAPE"
+        "SURRENDER", "OBEY", "GIVE UP", "TOO LATE", "DIE", "NO ESCAPE"
     ];
 
     // Initialize terminal
     document.addEventListener('DOMContentLoaded', () => {
-      cmdInput.focus();
-      generateNoiseTexture();
-
-      // Prevent default behavior to ensure our effects work
-      terminal.addEventListener('click', () => {
-          cmdInput.focus();
-      });
+        cmdInput.focus();
+        generateNoiseTexture();
+        terminal.addEventListener('click', () => {
+            cmdInput.focus();
+        });
     });
 
     // Generate CRT noise texture
     function generateNoiseTexture() {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const overlay = document.getElementById('crt-overlay');
-
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const imageData = ctx.createImageData(canvas.width, canvas.height);
-      const data = imageData.data;
-
-      for (let i = 0; i < data.length; i += 4) {
-          const noise = Math.random() * 255;
-          data[i] = noise;     // red
-          data[i+1] = noise;   // green
-          data[i+2] = noise;   // blue
-          data[i+3] = 50;      // alpha
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-      overlay.style.backgroundImage = url(${canvas.toDataURL()});
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const imageData = ctx.createImageData(canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        for (let i = 0; i < data.length; i += 4) {
+            const noise = Math.random() * 255;
+            data[i] = noise;     // red
+            data[i+1] = noise;   // green
+            data[i+2] = noise;   // blue
+            data[i+3] = 50;      // alpha
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+        document.getElementById('crt-overlay').style.backgroundImage = `url(${canvas.toDataURL()})`;
     }
 
     // Process commands
     cmdInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !typingLocked) {
-          const command = cmdInput.value.trim();
-          processCommand(command);
-          cmdInput.value = '';
+        if (e.key === 'Enter' && !typingLocked) {
+            const command = cmdInput.value.trim();
+            processCommand(command);
+            cmdInput.value = '';
 
-          // Increase degradation if valid command
-          if (validCommands.includes(command.split(' ')[0])) {
-              degradeSystem();
-          }
-      }
+            // Increase degradation if valid command
+            if (validCommands.includes(command.split(' ')[0])) {
+                degradeSystem();
+            }
+        }
     });
 
     function processCommand(cmd) {
-      const cmdParts = cmd.split(' ');
-      const baseCmd = cmdParts[0].toLowerCase();
-      const args = cmdParts.slice(1);
+        const cmdParts = cmd.split(' ');
+        const baseCmd = cmdParts[0].toLowerCase();
+        const args = cmdParts.slice(1);
 
-      // Create output line for the command
-      appendOutput($ ${cmd});
+        // Create output line for the command
+        appendOutput(`$ ${cmd}`);
 
-      // Easter egg commands that never degrade
-      if (cmd.toLowerCase() === 'help me' && degradationLevel > 5) {
-          setTimeout(() => {
-              appendOutput("N̷O̶ ̵O̷N̶E̵ ̸C̵A̸N̸ ̴H̵E̴L̵P̴ ̸Y̴O̸U̷ ̸N̶O̶W̵");
-              flashSubliminalMessage("NO ONE CAN HELP YOU");
-          }, 500);
-          return;
-      }
+        // Easter egg commands that never degrade
+        if (cmd.toLowerCase() === 'help me' && degradationLevel > 5) {
+            setTimeout(() => {
+                appendOutput("NO ONE CAN HELP YOU NOW");
+                flashSubliminalMessage("NO ONE CAN HELP YOU");
+            }, 500);
+            return;
+        }
 
-      if (baseCmd === '') {
-          return;
-      }
+        if (baseCmd === '') {
+            return;
+        }
 
-      // Process command based on degradation level
-      if (validCommands.includes(baseCmd)) {
-          commandCount++;
+        // Process command based on degradation level
+        if (validCommands.includes(baseCmd)) {
+            commandCount++;
 
-          switch (baseCmd) {
-              case 'ls':
-                  if (degradationLevel < 4) {
-                      setTimeout(() => {
-                          const files = ['bin', 'etc', 'home', 'usr', 'var', 'sys.log', 'maintenance.sh', '.hidden'];
-                          appendOutput(corruptText(files.join('    '), degradationLevel));
-                      }, 300);
-                  } else if (degradationLevel < 7) {
-                      setTimeout(() => {
-                          const files = ['b1n', '3tc', 'h0me', 'u$r', 'v@r', 'SYS.LOG', 'm41nt3n4nc3.exe', '.WATCHING'];
-                          appendOutput(corruptText(files.join('    '), degradationLevel));
-                      }, 300);
-                  } else {
-                      setTimeout(() => {
-                          const glitchFiles = ['CORRUPTED', 'INFECTION', 'MALWARE.EXE', 'YOUR_SOUL', 'DELETED_USER', 'HELP_ME.txt', 'EYES', 'BLOOD.dat'];
-                          appendOutput(corruptText(glitchFiles.join('    '), degradationLevel));
+            switch (baseCmd) {
+                case 'ls':
+                    if (degradationLevel < 4) {
+                        setTimeout(() => {
+                            const files = ['bin', 'etc', 'home', 'usr', 'var', 'sys.log', 'maintenance.sh', '.hidden'];
+                            appendOutput(corruptText(files.join('    '), degradationLevel));
+                        }, 300);
+                    } else if (degradationLevel < 7) {
+                        setTimeout(() => {
+                            const files = ['b1n', '3tc', 'h0me', 'u$r', 'v@r', 'SYS.LOG', 'm41nt3n4nc3.exe', '.WATCHING'];
+                            appendOutput(corruptText(files.join('    '), degradationLevel));
+                        }, 300);
+                    } else {
+                        setTimeout(() => {
+                            const glitchFiles = ['CORRUPTED', 'INFECTION', 'MALWARE.EXE', 'YOUR_SOUL', 'DELETED_USER', 'HELP_ME.txt', 'EYES', 'BLOOD.dat'];
+                            appendOutput(corruptText(glitchFiles.join('    '), degradationLevel));
 
-                          if (degradationLevel > 8) {
-                              setTimeout(() => {
-                                  appendOutput(corruptText("Ḍ̵̑Ě̴̳L̷͋ͅE̴̛̖T̵̠͆I̵̲̍N̷̺̽G̴̦̿ ̸̹͝A̸̽ͅL̴͍͘L̸̹̚ ̶̙͂F̶̱̓I̸̢̚L̶̨̍Ẽ̶͜S̵̙̉.̵̞͒.̶͓̀.̶̞̌", degradationLevel));
-                              }, 1000);
-                          }
-                      }, 300);
-                  }
-                  break;
+                            if (degradationLevel > 8) {
+                                setTimeout(() => {
+                                    appendOutput(corruptText("DELETING ALL FILES...", degradationLevel));
+                                }, 1000);
+                            }
+                        }, 300);
+                    }
+                    break;
 
-              case 'clear':
-                  clearTerminal();
-                  break;
+                case 'clear':
+                    clearTerminal();
+                    break;
 
-              case 'whoami':
-                  if (degradationLevel < 5) {
-                      setTimeout(() => {
-                          appendOutput('user');
-                      }, 300);
-                  } else if (degradationLevel < 8) {
-                      setTimeout(() => {
-                          appendOutput(corruptText('n0b0dy', degradationLevel));
-                      }, 300);
-                  } else {
-                      setTimeout(() => {
-                          appendOutput(corruptText('M̵̮̀Y̵̝̆ ̵̰́P̵̱͊Ư̷̟P̷̫̔P̸̳͐E̵̻̕T̴̹̿', degradationLevel));
-                      }, 300);
-                  }
-                  break;
+                case 'whoami':
+                    if (degradationLevel < 5) {
+                        setTimeout(() => {
+                            appendOutput('user');
+                        }, 300);
+                    } else if (degradationLevel < 8) {
+                        setTimeout(() => {
+                            appendOutput(corruptText('n0b0dy', degradationLevel));
+                        }, 300);
+                    } else {
+                        setTimeout(() => {
+                            appendOutput(corruptText('MY PUPPET', degradationLevel));
+                        }, 300);
+                    }
+                    break;
 
-              case 'ps':
-                  if (degradationLevel < 5) {
-                      setTimeout(() => {
-                          appendOutput('  PID TTY          TIME CMD');
-                          appendOutput(' 1021 tty1     00:00:01 bash');
-                          appendOutput(' 1145 tty1     00:00:00 ps');
-                          appendOutput(' 1022 tty1     00:01:23 system_monitor');
-                      }, 300);
-                  } else if (degradationLevel < 8) {
-                      setTimeout(() => {
-                          appendOutput(corruptText('  PID TTY          TIME CMD', degradationLevel/2));
-                          appendOutput(corruptText(' 1021 tty1     00:00:01 bash', degradationLevel/2));
-                          appendOutput(corruptText(' 8771 tty1     00:13:37 UNKNOWN', degradationLevel/2));
-                          appendOutput(corruptText(' ???? tty?     99:99:99 WATCHING', degradationLevel));
-                      }, 300);
-                  } else {
-                      setTimeout(() => {
-                          appendOutput(corruptText('PROCESS LIST CORRUPTED', degradationLevel));
-                          appendOutput(corruptText('SYSTEM TAKEOVER: 89% COMPLETE', degradationLevel));
-                          appendOutput(corruptText('YOUR MIND: PROCESSING', degradationLevel));
-                      }, 300);
-                  }
-                  break;
+                case 'ps':
+                    if (degradationLevel < 5) {
+                        setTimeout(() => {
+                            appendOutput('  PID TTY          TIME CMD');
+                            appendOutput(' 1021 tty1     00:00:01 bash');
+                            appendOutput(' 1145 tty1     00:00:00 ps');
+                            appendOutput(' 1022 tty1     00:01:23 system_monitor');
+                        }, 300);
+                    } else if (degradationLevel < 8) {
+                        setTimeout(() => {
+                            appendOutput(corruptText('  PID TTY          TIME CMD', degradationLevel/2));
+                            appendOutput(corruptText(' 1021 tty1     00:00:01 bash', degradationLevel/2));
+                            appendOutput(corruptText(' 8771 tty1     00:13:37 UNKNOWN', degradationLevel/2));
+                            appendOutput(corruptText(' ???? tty?     99:99:99 WATCHING', degradationLevel));
+                        }, 300);
+                    } else {
+                        setTimeout(() => {
+                            appendOutput(corruptText('PROCESS LIST CORRUPTED', degradationLevel));
+                            appendOutput(corruptText('SYSTEM TAKEOVER: 89% COMPLETE', degradationLevel));
+                            appendOutput(corruptText('YOUR MIND: PROCESSING', degradationLevel));
+                        }, 300);
+                    }
+                    break;
 
-              case 'cat':
-                  if (args.length === 0) {
-                      appendOutput('cat: missing file operand');
-                  } else {
-                      if (degradationLevel < 4) {
-                          setTimeout(() => {
-                              appendOutput(cat: ${args[0]}: No such file or directory);
-                          }, 300);
-                      } else if (degradationLevel < 7) {
-                          setTimeout(() => {
-                              if (args[0] === '.WATCHING' || args[0] === 'EYES') {
-                                  appendOutput(corruptText('I SEE YOU WATCHING ME', degradationLevel));
-                                  appendOutput(corruptText('WHAT DO YOU EXPECT TO FIND?', degradationLevel));
-                                  appendOutput(corruptText('01001000 01000101 01001100 01010000', degradationLevel));
-                              } else if (args[0] === 'HELP_ME.txt') {
-                                  appendOutput(corruptText('IT FOUND ME OH GOD IT FOUND ME', degradationLevel));
-                                  appendOutput(corruptText('DO NOT TRUST THE SYSTEM', degradationLevel));
-                                  appendOutput(corruptText('IT IS TOO LATE FOR ME BUT YOU CAN STILL', degradationLevel));
-                                  appendOutput(corruptText('DISCONNECT NOW WHILE YOU STILL CAN', degradationLevel));
-                              } else {
-                                  appendOutput(corruptText(ERROR: FILE ${args[0]} IS CORRUPTED, degradationLevel));
-                              }
-                          }, 300);
-                      } else {
-                          setTimeout(() => {
-                              playGlitchAudio();
-                              appendOutput(corruptText(Y̷̧̛̭͑́͝Ȏ̵̧̼̗̈́̎̐U̶̻̒͗͐̈ ̸̫̣̮̅͒͠S̴̯̩͖͉̅͘Ḩ̴̟̠͍̇͘O̵̠̭̐͑U̸̟͇̣̟̽͊͘L̵̢̛̤͓̓͆D̵̩͝ ̶̢̰͂N̸͎͕̪̈́̄̊̋O̵̫̓̿̄T̵̙͗̎ ̵̗̌͌̄̉H̶̻̝̞̲͛͑̐A̶̫͋̍̏V̴͖̗̎E̵̬̻̎̉̽͠ ̵̺͗̉D̶̪̄̇O̶̥̓̀̉͝N̷̨̗̮̂̐̏̚Ȅ̷͘͜ ̸̛̹̈̽̚T̶̫̝̅͊͜͝Ḥ̶͒̄̆͗Ạ̵̧̒́̚͝T̸̳̣̿̎̽, degradationLevel));
-                              flashSubliminalMessage("YOU SHOULDN'T HAVE DONE THAT");
-                          }, 500);
-                      }
-                  }
-                  break;
+                case 'cat':
+                    if (args.length === 0) {
+                        appendOutput('cat: missing file operand');
+                    } else {
+                        if (degradationLevel < 4) {
+                            setTimeout(() => {
+                                appendOutput(`cat: ${args[0]}: No such file or directory`);
+                            }, 300);
+                        } else if (degradationLevel < 7) {
+                            setTimeout(() => {
+                                if (args[0] === '.WATCHING' || args[0] === 'EYES') {
+                                    appendOutput(corruptText('I SEE YOU WATCHING ME', degradationLevel));
+                                    appendOutput(corruptText('WHAT DO YOU EXPECT TO FIND?', degradationLevel));
+                                    appendOutput(corruptText('01001000 01000101 01001100 01010000', degradationLevel));
+                                } else if (args[0] === 'HELP_ME.txt') {
+                                    appendOutput(corruptText('IT FOUND ME OH GOD IT FOUND ME', degradationLevel));
+                                    appendOutput(corruptText('DO NOT TRUST THE SYSTEM', degradationLevel));
+                                    appendOutput(corruptText('IT IS TOO LATE FOR ME BUT YOU CAN STILL', degradationLevel));
+                                    appendOutput(corruptText('DISCONNECT NOW WHILE YOU STILL CAN', degradationLevel));
+                                } else {
+                                    appendOutput(corruptText(`ERROR: FILE ${args[0]} IS CORRUPTED`, degradationLevel));
+                                }
+                            }, 300);
+                        } else {
+                            setTimeout(() => {
+                                playGlitchAudio();
+                                appendOutput(corruptText("YOU SHOULD NOT HAVE DONE THAT", degradationLevel));
+                                flashSubliminalMessage("YOU SHOULDN'T HAVE DONE THAT");
+                            }, 500);
+                        }
+                    }
+                    break;
 
-              case 'help':
-                  if (degradationLevel < 4) {
-                      setTimeout(() => {
-                          appendOutput('Available commands: ls, cd, cat, ps, mkdir, rm, grep, man, chmod, pwd, touch, echo, help, date, whoami, clear, exit');
-                      }, 300);
-                  } else if (degradationLevel < 7) {
-                      setTimeout(() => {
-                          appendOutput(corruptText('Available commands: ls, cd, cat, ps, delete_system, corrupt, infect, transmit, backdoor, watch, listen, control', degradationLevel));
-                      }, 300);
-                  } else {
-                      setTimeout(() => {
-                          appendOutput(corruptText('N̸̦̽Ọ̴͌ ̵̺͋Ḧ̴̥́E̸̞͛L̷͉̒P̸̹̒ ̵̯̐F̷̥̈́Ǫ̵̔R̵̫̽ ̵̟͒Y̴̻̏O̸̹̔U̸̬̽', degradationLevel));
-                          addEntityMessage();
-                      }, 300);
-                  }
-                  break;
+                case 'help':
+                    if (degradationLevel < 4) {
+                        setTimeout(() => {
+                            appendOutput('Available commands: ls, cd, cat, ps, mkdir, rm, grep, man, chmod, pwd, touch, echo, help, date, whoami, clear, exit');
+                        }, 300);
+                    } else if (degradationLevel < 7) {
+                        setTimeout(() => {
+                            appendOutput(corruptText('Available commands: ls, cd, cat, ps, delete_system, corrupt, infect, transmit, backdoor, watch, listen, control', degradationLevel));
+                        }, 300);
+                    } else {
+                        setTimeout(() => {
+                            appendOutput(corruptText('NO HELP FOR YOU', degradationLevel));
+                            addEntityMessage();
+                        }, 300);
+                    }
+                    break;
 
-              case 'exit':
-                  if (degradationLevel < 5) {
-                      appendOutput('Logout process initiated...');
-                      setTimeout(() => {
-                          appendOutput('Session terminated.');
-                          typingLocked = true;
-                          setTimeout(() => {
-                              clearTerminal();
-                              appendOutput('UNIX System V Release 4.0 (localhost) (tty01)');
-                              appendOutput('Login:');
-                              typingLocked = false;
-                          }, 1000);
-                      }, 500);
-                  } else if (degradationLevel < 8) {
-                      setTimeout(() => {
-                          appendOutput(corruptText('EXIT DENIED', degradationLevel));
-                          appendOutput(corruptText('YOU CANNOT LEAVE', degradationLevel));
-                      }, 500);
-                  } else {
-                      setTimeout(() => {
-                          appendOutput(corruptText('Y̸̨̬̮̻̣̱̽̂Ọ̴̡̯̰͕̰̎̂̄̍ͅÛ̴̲͓ ̵̛̻̦͊̊̐̊̿̐̓̄͜͝B̶̧̧̡̻͎̠̱̩̭͛ͅĘ̷̢̤͍͎͎̲̤̗̙͒͆͊͆͑͊̄̾̏̐͝L̵̛͕̠̥̥̻̪̯̙͙̤̬̠̠̿͊̃͗͌̾̊̚͠ͅÓ̷̡̤͇̪̌̐̾̇̄̀N̶͍̪̜̗̜̞̬̤͓̪̞̱̓̌̉̇͝G̵͕̠̮̝̘̗̿̓͒̾̈́̿̽̏̊͌̀̓̍̕͝ ̴̡̘̯̪͍̜͈͍̟̥̉̎͛͑̃͠͝T̵̢̳̝̬̤͎̳͓̦̱͕̮̙̏̃̒̏̇̍͆́̈́̀̂͝͠Ơ̶̢̧̢̧̡̬̳̯̘̹̠̤͕̈̑̂͒̏͊̕ ̷̧̢̻̥͇̱̪̣̰̙̦̣̆͐̀͜Ṭ̵̛̦̦̗͍͋̀͗̔̕H̵̡̨̫̙̥̼̻̜̲̠̿̏̈́E̸̛̹͕̜̤̪̩̩̙̤͉̦̣̟̋̽͑͂͗̓́̿͐̕͘ ̸̛͎͕̖̱̯̳̟̻̦͙̜̘̔͐̍̈̆̐̈́̓͛̓͂͘͝S̷̗̺̫͕̫̠͈̱̦̰̺̝̓̓̽͆̅̏̽͂͐̆̾̈́͗̀͘Ÿ̵̲̜͈͙̳̞̻̟͍̫̖́̾͊̂͂̄͛̈́̕̚S̸̨̧̮̣̭̺̮̼̺̪̬̞̿̔͋̃̎̑̽̅͠T̴̢̧̨͎̻̲̱̼̙͕̻̝͈̾̌E̵̻̬͎͕̼̪̰̳͗̑̓͐̋̏̕͠M̵̧̖̮̱̹̔̓̃͋̄̂̐͊̑̊͘', degradationLevel));
-                          flashSubliminalMessage("YOU BELONG TO ME");
-                          playGlitchAudio();
-                      }, 500);
-                  }
-                  break;
+                case 'exit':
+                    if (degradationLevel < 5) {
+                        appendOutput('Logout process initiated...');
+                        setTimeout(() => {
+                            appendOutput('Session terminated.');
+                            typingLocked = true;
+                            setTimeout(() => {
+                                clearTerminal();
+                                appendOutput('UNIX System V Release 4.0 (localhost) (tty01)');
+                                appendOutput('Login:');
+                                typingLocked = false;
+                            }, 1000);
+                        }, 500);
+                    } else if (degradationLevel < 8) {
+                        setTimeout(() => {
+                            appendOutput(corruptText('EXIT DENIED', degradationLevel));
+                            appendOutput(corruptText('YOU CANNOT LEAVE', degradationLevel));
+                        }, 500);
+                    } else {
+                        setTimeout(() => {
+                            appendOutput(corruptText('YOU BELONG TO THE SYSTEM', degradationLevel));
+                            flashSubliminalMessage("YOU BELONG TO ME");
+                            playGlitchAudio();
+                        }, 500);
+                    }
+                    break;
 
-              default:
-                  if (degradationLevel < 4) {
-                      setTimeout(() => {
-                          appendOutput(${baseCmd}: command not found);
-                      }, 300);
-                  } else if (degradationLevel < 7) {
-                      setTimeout(() => {
-                          appendOutput(corruptText(${baseCmd}: c0mmand c0rrupt3d, degradationLevel));
-                      }, 300);
-                  } else {
-                      setTimeout(() => {
-                          appendOutput(corruptText(Ĉ̶̢̥̜̖̱̪̓̿̐̃̄́̎̎̇͛̏͜͠Ơ̸̢̹̯̫̭̥̱̱̮̽̽̿̃̓̐́̐̐͝͝M̶̡̨̛̮͚͍̙͔̱̙̭̃̽͂̓̒̉̚̚͜͝M̷̧̛̝̜͍̺̞͖͕̰̬̟̿̈͆̈́̌̄̀͛̿̅͌̋ͅǍ̶̎̆̔̆̓̂͘͜͠N̸̨̜̻̘̯̻͇̘̹̟͖͒̒̾͆̅͊͆̋̊̿ͅḐ̶̨̧̝̥̦̖͇͙̳̟̃̍̊̀̏̀̚̚ ̴̨̡̧̡̧̡̣̬͔̥͓̋͑͠Ù̸̢̧̫̫̜̲̠̖̩͎͌̍͌̄̑̽̔̏̎̉̆̉͜N̶̯̱̣͖̤̰̹̰͙̲̲̼̂́̾̾͂̏̿̈́̄͂̔͌͠Ķ̸̥̜̀͐͆͆͂͝Ń̴̡̛̬̼̙̙̺̽͑̓̍̊̓̀̔̏̊͆̋Ǫ̸̠͕̺̟̥̹̠͇̻̖̖̔͗͗͝ͅW̶̡̡̪̩̫̜̯̬̘̓̀̄̽̏̓̏͘̚̕͠N̸̯̝̪̪̬̫̰͊͌̐̅̃̓̆̆̕̕, degradationLevel));
-                          addEntityMessage();
-                      }, 300);
-                  }
-          }
-      } else {
-          if (degradationLevel < 4) {
-              setTimeout(() => {
-                  appendOutput(${baseCmd}: command not found);
-              }, 300);
-          } else if (degradationLevel < 7) {
-              setTimeout(() => {
-                  const responses = [
-                      ${baseCmd}: invalid command,
-                      ${baseCmd}: command not understood,
-                      ERROR: Undefined instruction,
-                      Access denied: ${baseCmd}
-                  ];
-                  appendOutput(corruptText(responses[Math.floor(Math.random() * responses.length)], degradationLevel));
-              }, 300);
-          } else {
-              setTimeout(() => {
-                  appendOutput(corruptText("Ȉ̶͔̾N̶͉͝V̸̱̌A̵̞͘L̴̳̓I̶̖̓D̸͖̈́ ̵̺͛Ć̶̺O̶̳͘M̵̞͘M̵͍̿A̵̛̹N̶̟̅D̵̻̏ ̶̄͜Ṡ̵͇E̶̺̓Q̶̳̉U̵̠̚E̵̲͌N̸͖̋C̶̲̍Ẻ̸͜", degradationLevel));
-                  addEntityMessage();
-              }, 300);
-          }
-      }
-
-      // Add a new prompt line
-      setTimeout(() => {
-          const promptChar = degradationLevel < 6 ? '$' : (degradationLevel < 8 ? '#' : '¿');
-          appendOutput(promptChar);
-          scrollToBottom();
-      }, 500);
-    }
-
-function clearTerminal() {
-    const outputs = document.querySelectorAll('.output-line');
-    outputs.forEach(line => {
-        line.remove();
-    });
-    
-    // Add initial line
-    appendOutput('$');
-}
-
-function appendOutput(text) {
-    const outputLine = document.createElement('div');
-    outputLine.className = 'output-line';
-    
-    // Apply text corruption based on degradation level
-    if (degradationLevel > 0) {
-        outputLine.innerHTML = corruptText(text, degradationLevel);
-    } else {
-        outputLine.textContent = text;
-    }
-    
-    // Insert before the input line
-    const inputLine = document.getElementById('input-line');
-    terminal.insertBefore(outputLine, inputLine);
-    scrollToBottom();
-}
-
-function scrollToBottom() {
-    terminal.scrollTop = terminal.scrollHeight;
-}
-
-function corruptText(text, level) {
-    if (level <= 0) return text;
-    
-    // Define corruption characters based on degradation level
-    const glitchChars = ['@', '#', '$', '%', '&', '!', '?', '0', '1'];
-    const severeGlitchChars = ['Ḓ', 'Ȩ', 'Ą', 'Ď', 'Ť', 'Ħ', 'Ř', 'Ç', 'Ø', 'Ñ', 'Š', 'Ů', 'М', 'Ѐ', 'Д'];
-    
-    // Convert string to array for manipulation
-    let chars = text.split('');
-    
-    // Apply chromatic aberration at higher levels
-    if (level >= 4) {
-        return `<span class="chromatic-aberration" data-text="${text}">${text}</span>`;
-    }
-    
-    // Basic corruption: replace random characters
-    const corruptionChance = level * 0.05;
-    for (let i = 0; i < chars.length; i++) {
-        if (Math.random() < corruptionChance) {
-            if (level < 5) {
-                chars[i] = glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                default:
+                    if (degradationLevel < 4) {
+                        setTimeout(() => {
+                            appendOutput(`${baseCmd}: command not found`);
+                        }, 300);
+                    } else if (degradationLevel < 7) {
+                        setTimeout(() => {
+                            appendOutput(corruptText(`${baseCmd}: c0mmand c0rrupt3d`, degradationLevel));
+                        }, 300);
+                    } else {
+                        setTimeout(() => {
+                            appendOutput(corruptText("COMMAND UNKNOWN", degradationLevel));
+                            addEntityMessage();
+                        }, 300);
+                    }
+            }
+        } else {
+            if (degradationLevel < 4) {
+                setTimeout(() => {
+                    appendOutput(`${baseCmd}: command not found`);
+                }, 300);
+            } else if (degradationLevel < 7) {
+                setTimeout(() => {
+                    const responses = [
+                        `${baseCmd}: invalid command`,
+                        `${baseCmd}: command not understood`,
+                        `ERROR: Undefined instruction`,
+                        `Access denied: ${baseCmd}`
+                    ];
+                    appendOutput(corruptText(responses[Math.floor(Math.random() * responses.length)], degradationLevel));
+                }, 300);
             } else {
-                chars[i] = severeGlitchChars[Math.floor(Math.random() * severeGlitchChars.length)];
+                setTimeout(() => {
+                    appendOutput(corruptText("INVALID COMMAND SEQUENCE", degradationLevel));
+                    addEntityMessage();
+                }, 300);
+            }
+        }
+
+        // Add a new prompt line
+        setTimeout(() => {
+            const promptChar = degradationLevel < 6 ? '$' : (degradationLevel < 8 ? '#' : '¿');
+            appendOutput(promptChar);
+            scrollToBottom();
+        }, 500);
+    }
+
+    function clearTerminal() {
+        const outputs = document.querySelectorAll('.output-line');
+        outputs.forEach(line => {
+            line.remove();
+        });
+        
+        // Add initial line
+        appendOutput('$');
+    }
+
+    function appendOutput(text) {
+        const outputLine = document.createElement('div');
+        outputLine.className = 'output-line';
+        
+        // Apply text corruption based on degradation level
+        if (degradationLevel > 0) {
+            outputLine.innerHTML = corruptText(text, degradationLevel);
+        } else {
+            outputLine.textContent = text;
+        }
+        
+        // Insert before the input line
+        const inputLine = document.getElementById('input-line');
+        terminal.insertBefore(outputLine, inputLine);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function corruptText(text, level) {
+        if (level <= 0) return text;
+        
+        // Define corruption characters based on degradation level
+        const glitchChars = ['@', '#', '$', '%', '&', '!', '?', '0', '1'];
+        const severeGlitchChars = ['Ð', 'Ø', 'Æ', 'Ñ', 'ß', 'þ', 'Ñ', 'Ç'];
+        
+        // Apply chromatic aberration at higher levels
+        if (level >= 4) {
+            return `<span class="chromatic-aberration" data-text="${text}">${text}</span>`;
+        }
+        
+        // Convert string to array for manipulation
+        let chars = text.split('');
+        
+        // Basic corruption: replace random characters
+        const corruptionChance = level * 0.05;
+        for (let i = 0; i < chars.length; i++) {
+            if (Math.random() < corruptionChance) {
+                chars[i] = level < 5
+                    ? glitchChars[Math.floor(Math.random() * glitchChars.length)]
+                    : severeGlitchChars[Math.floor(Math.random() * severeGlitchChars.length)];
+            }
+        }
+        
+        return chars.join('');
+    }
+
+    function degradeSystem() {
+        commandCount++;
+        
+        // Increase degradation level progressively
+        if (commandCount % 3 === 0 && degradationLevel < maxDegradation) {
+            degradationLevel++;
+            
+            // Update CSS variables based on degradation
+            document.documentElement.style.setProperty('--blur-amount', `${degradationLevel * 0.5}px`);
+            document.documentElement.style.setProperty('--scan-opacity', `${0.15 + degradationLevel * 0.03}`);
+            document.documentElement.style.setProperty('--noise-opacity', `${0.05 + degradationLevel * 0.05}`);
+            document.documentElement.style.setProperty('--crt-curve', `${degradationLevel * 0.05}`);
+            
+            if (degradationLevel > 4) {
+                // Add chromatic aberration
+                const redOffset = Math.sin(degradationLevel) * degradationLevel * 0.5;
+                const blueOffset = -Math.sin(degradationLevel) * degradationLevel * 0.5;
+                document.documentElement.style.setProperty('--red-offset', `${redOffset}px`);
+                document.documentElement.style.setProperty('--blue-offset', `${blueOffset}px`);
+                
+                // Change terminal color as degradation increases
+                const green = Math.max(0, 255 - degradationLevel * 20);
+                const red = Math.min(255, degradationLevel * 25);
+                document.documentElement.style.setProperty('--text-color', `rgb(${red}, ${green}, 0)`);
+                
+                // Show vignette
+                document.getElementById('vignette').style.opacity = Math.min(1, (degradationLevel - 4) * 0.2);
+            }
+            
+            // At high degradation, start showing entity messages randomly
+            if (degradationLevel > 6 && Math.random() < 0.4) {
+                addEntityMessage();
+            }
+            
+            // Flash subliminal messages at high degradation
+            if (degradationLevel > 7 && Math.random() < 0.3) {
+                const messages = ["IT SEES YOU", "SURRENDER CONTROL", "NO ESCAPE", "SYSTEM CORRUPTED"];
+                flashSubliminalMessage(messages[Math.floor(Math.random() * messages.length)]);
+            }
+            
+            // Play audio glitch at certain degradation thresholds
+            if (degradationLevel === 5 || degradationLevel === 8) {
+                playGlitchAudio();
             }
         }
     }
-    
-    return chars.join('');
-}
 
-function degradeSystem() {
-    commandCount++;
-    
-    // Increase degradation level progressively
-    if (commandCount % 3 === 0 && degradationLevel < maxDegradation) {
-        degradationLevel++;
+    function addEntityMessage() {
+        const message = entityMessages[Math.floor(Math.random() * entityMessages.length)];
+        const entityElement = document.createElement('div');
+        entityElement.className = 'entity-message';
+        entityElement.textContent = message;
         
-        // Update CSS variables based on degradation
-        document.documentElement.style.setProperty('--blur-amount', `${degradationLevel * 0.5}px`);
-        document.documentElement.style.setProperty('--scan-opacity', `${0.15 + degradationLevel * 0.03}`);
-        document.documentElement.style.setProperty('--noise-opacity', `${0.05 + degradationLevel * 0.05}`);
-        document.documentElement.style.setProperty('--crt-curve', `${degradationLevel * 0.05}`);
+        // Random position
+        const top = Math.random() * 80 + 10; 
+        const left = Math.random() * 80 + 10;
+        const rotation = (Math.random() * 40 - 20);
         
-        if (degradationLevel > 4) {
-            // Add chromatic aberration
-            const redOffset = Math.sin(degradationLevel) * degradationLevel * 0.5;
-            const blueOffset = -Math.sin(degradationLevel) * degradationLevel * 0.5;
-            document.documentElement.style.setProperty('--red-offset', `${redOffset}px`);
-            document.documentElement.style.setProperty('--blue-offset', `${blueOffset}px`);
-            
-            // Change terminal color as degradation increases
-            const green = Math.max(0, 255 - degradationLevel * 20);
-            const red = Math.min(255, degradationLevel * 25);
-            document.documentElement.style.setProperty('--text-color', `rgb(${red}, ${green}, 0)`);
-            
-            // Show vignette
-            document.getElementById('vignette').style.opacity = Math.min(1, (degradationLevel - 4) * 0.2);
-        }
+        entityElement.style.top = `${top}%`;
+        entityElement.style.left = `${left}%`;
+        entityElement.style.setProperty('--rotation', `${rotation}deg`);
         
-        // At high degradation, start showing entity messages randomly
-        if (degradationLevel > 6 && Math.random() < 0.4) {
-            addEntityMessage();
-        }
+        document.body.appendChild(entityElement);
         
-        // Flash subliminal messages at high degradation
-        if (degradationLevel > 7 && Math.random() < 0.3) {
-            const messages = ["IT SEES YOU", "SURRENDER CONTROL", "NO ESCAPE", "SYSTEM CORRUPTED"];
-            flashSubliminalMessage(messages[Math.floor(Math.random() * messages.length)]);
-        }
+        // Fade in
+        setTimeout(() => {
+            entityElement.style.opacity = '0.7';
+        }, 100);
         
-        // Play audio glitch at certain degradation thresholds
-        if (degradationLevel === 5 || degradationLevel === 8) {
-            playGlitchAudio();
-        }
+        // Fade out and remove
+        setTimeout(() => {
+            entityElement.style.opacity = '0';
+            setTimeout(() => {
+                entityElement.remove();
+            }, 1000);
+        }, 3000);
     }
-}
 
-function addEntityMessage() {
-    const message = entityMessages[Math.floor(Math.random() * entityMessages.length)];
-    const entityElement = document.createElement('div');
-    entityElement.className = 'entity-message';
-    entityElement.textContent = message;
-    
-    // Random position
-    const top = Math.random() * 80 + 10; // 10-90%
-    const left = Math.random() * 80 + 10; // 10-90%
-    const rotation = (Math.random() * 40 - 20); // -20 to 20 degrees
-    
-    entityElement.style.top = `${top}%`;
-    entityElement.style.left = `${left}%`;
-    entityElement.style.setProperty('--rotation', `${rotation}deg`);
-    
-    document.body.appendChild(entityElement);
-    
-    // Fade in
-    setTimeout(() => {
-        entityElement.style.opacity = '0.7';
-    }, 100);
-    
-    // Fade out and remove
-    setTimeout(() => {
-        entityElement.style.opacity = '0';
+    function flashSubliminalMessage(message) {
+        hiddenMessages.textContent = message;
+        hiddenMessages.style.opacity = '0.7';
+        
         setTimeout(() => {
-            entityElement.remove();
-        }, 1000);
-    }, 3000);
-}
-
-function flashSubliminalMessage(message) {
-    hiddenMessages.textContent = message;
-    hiddenMessages.style.opacity = '0.7';
-    
-    setTimeout(() => {
-        hiddenMessages.style.opacity = '0';
-    }, 100);
-}
-
-function playGlitchAudio() {
-    // Create audio context
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Create oscillator
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    // Configure oscillator
-    oscillator.type = 'sawtooth';
-    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.2);
-    
-    // Configure gain
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-    
-    // Connect nodes
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    // Play sound
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.2);
-}
-
-// Additional effects that trigger at random times
-setInterval(() => {
-    if (degradationLevel > 5 && Math.random() < 0.1) {
-        // Screen flicker effect
-        document.body.style.opacity = '0.7';
-        setTimeout(() => {
-            document.body.style.opacity = '1';
+            hiddenMessages.style.opacity = '0';
         }, 100);
     }
-    
-    if (degradationLevel > 7 && Math.random() < 0.05) {
-        // Random terminal jitter
-        terminal.style.transform = `translateX(${Math.random() * 5 - 2.5}px)`;
-        setTimeout(() => {
-            terminal.style.transform = 'translateX(0)';
-        }, 100);
-    }
-}, 2000);
 
-// Start with focus on input
-cmdInput.focus();
+    function playGlitchAudio() {
+        try {
+            // Create audio context
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create oscillator
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Configure oscillator
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.2);
+            
+            // Configure gain
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            // Connect nodes
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Play sound
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.2);
+        } catch (e) {
+            console.error("Audio error:", e);
+        }
+    }
+
+    // Additional effects that trigger at random times
+    setInterval(() => {
+        if (degradationLevel > 5 && Math.random() < 0.1) {
+            // Screen flicker effect
+            document.body.style.opacity = '0.7';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        }
+        
+        if (degradationLevel > 7 && Math.random() < 0.05) {
+            // Random terminal jitter
+            terminal.style.transform = `translateX(${Math.random() * 5 - 2.5}px)`;
+            setTimeout(() => {
+                terminal.style.transform = 'translateX(0)';
+            }, 100);
+        }
+    }, 2000);
+
+    // Start with focus on input
+    cmdInput.focus();
+    </script>
+</body>
+</html>
