@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scintillating Matrix Ornament</title>
+  <style>
+    /* Remove default margin and ensure the canvas fills the viewport */
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    // Set up the canvas and context
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Resize canvas to fit window
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    // Set font size and type
+    const fontSize = 18;
+    ctx.font = fontSize + "px monospace";
+
+    // Build an array of Marchen script characters (Unicode U+11C70 to U+11CBF)
+    const marchenChars = [];
+    for (let i = 0x11C70; i <= 0x11CBF; i++) {
+      marchenChars.push(String.fromCodePoint(i));
+    }
+
+    // Calculate the number of columns based on canvas width and font size
+    const columns = Math.floor(canvas.width / fontSize);
+
+    // Initialize drop positions for each column at random starting rows
+    const drops = Array(columns)
+      .fill(0)
+      .map(() => Math.floor(Math.random() * canvas.height / fontSize));
+
+    // The drawing function creates a fading trail and draws characters in each column.
+    function draw() {
+      // Create a translucent black rectangle to slightly fade previous frames
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Loop over every column to draw the character
+      for (let i = 0; i < columns; i++) {
+        // Pick a random Marchen character from the array
+        const text = marchenChars[Math.floor(Math.random() * marchenChars.length)];
+
+        // Calculate a dynamic hue value to create wavelike oscillations of color
+        const time = Date.now();
+        const hue = (time / 10 + i * 10) % 360;
+        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+
+        // Determine x and y coordinates for the character
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+        ctx.fillText(text, x, y);
+
+        // Reset drop to the top randomly or if it goes off the bottom of the screen
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        // Otherwise, move the drop down by one row
+        drops[i]++;
+      }
+      // Continue the animation loop
+      requestAnimationFrame(draw);
+    }
+
+    // Start the animation
+    draw();
+  </script>
+</body>
+</html>
