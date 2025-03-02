@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETRAGRAMA | Digital Wisdom</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #f0f0f0;
+            --accent-color: #8844ee;
+            --hover-color: #aa66ff;
+            --grid-size: 100px;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            letter-spacing: 10px;
+            margin: 0;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.7;
+            margin: 1rem 0;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+        
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin: 0 1.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--hover-color);
+        }
+        
+        .tetragram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--grid-size), 1fr));
+            gap: 20px;
+            padding: 3rem 0;
+        }
+        
+        .tetragram-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tetragram-cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(136, 68, 238, 0.3);
+            border-color: var(--accent-color);
+        }
+        
+        .tetragram-symbol {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .tetragram-name {
+            font-size: 0.8rem;
+            text-align: center;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .tetragram-cell:hover .tetragram-name {
+            opacity: 1;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-color);
+            max-width: 600px;
+            width: 90%;
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            border: 1px solid var(--accent-color);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .modal-symbol {
+            font-size: 5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .modal-description {
+            line-height: 1.6;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .intro-section {
+            max-width: 800px;
+            margin: 3rem auto;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .show-modal {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .tetragram-journey {
+            margin: 5rem 0;
+            text-align: center;
+        }
+        
+        .journey-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            letter-spacing: 5px;
+        }
+        
+        .tetragram-path {
+            display: flex;
+            overflow-x: auto;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) rgba(255,255,255,0.1);
+        }
+        
+        .path-node {
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 1rem;
+        }
+        
+        .path-symbol {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .path-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .path-connector {
+            display: flex;
+            align-items: center;
+            min-width: 50px;
+        }
+        
+        .path-connector::after {
+            content: "→";
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --grid-size: 80px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+                letter-spacing: 5px;
+            }
+            
+            .tetragram-symbol {
+                font-size: 2.5rem;
+            }
+            
+            .tetragram-name {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>TETRAGRAMA</h1>
+            <p>Ancient Wisdom in Digital Space</p>
+        </div>
+    </header>
+    
+    <nav>
+        <a href="#explore">EXPLORE</a>
+        <a href="#journeys">JOURNEYS</a>
+        <a href="#about">ABOUT</a>
+        <a href="#practice">PRACTICE</a>
+    </nav>
+    
+    <main class="container">
+        <section class="intro-section">
+            <p>Welcome to TETRAGRAMA, a digital sanctuary where ancient tetragrams guide modern exploration. Each symbol contains wisdom accumulated over millennia, waiting to be discovered. Click on any tetragram to begin your journey through meaning, connection, and insight.</p>
+        </section>
+        
+        <section id="explore" class="tetragram-grid">
+            <!-- Generated Tetragram Grid -->
+            <div class="tetragram-cell" data-tetragram="1D306">
+                <div class="tetragram-symbol">𝌆</div>
+                <div class="tetragram-name">CENTRE</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D307">
+                <div class="tetragram-symbol">𝌇</div>
+                <div class="tetragram-name">FULL CIRCLE</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D308">
+                <div class="tetragram-symbol">𝌈</div>
+                <div class="tetragram-name">MIRED</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D309">
+                <div class="tetragram-symbol">𝌉</div>
+                <div class="tetragram-name">BARRIER</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D30A">
+                <div class="tetragram-symbol">𝌊</div>
+                <div class="tetragram-name">KEEPING SMALL</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D30B">
+                <div class="tetragram-symbol">𝌋</div>
+                <div class="tetragram-name">CONTRARIETY</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D30C">
+                <div class="tetragram-symbol">𝌌</div>
+                <div class="tetragram-name">ASCENT</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D30D">
+                <div class="tetragram-symbol">𝌍</div>
+                <div class="tetragram-name">OPPOSITION</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D30E">
+                <div class="tetragram-symbol">𝌎</div>
+                <div class="tetragram-name">BRANCHING OUT</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D332">
+                <div class="tetragram-symbol">𝌲</div>
+                <div class="tetragram-name">GREATNESS</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D31D">
+                <div class="tetragram-symbol">𝌝</div>
+                <div class="tetragram-name">JOY</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D329">
+                <div class="tetragram-symbol">𝌩</div>
+                <div class="tetragram-name">STRENGTH</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D32A">
+                <div class="tetragram-symbol">𝌪</div>
+                <div class="tetragram-name">PURITY</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D321">
+                <div class="tetragram-symbol">𝌡</div>
+                <div class="tetragram-name">CHANGE</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D33A">
+                <div class="tetragram-symbol">𝌺</div>
+                <div class="tetragram-name">ETERNITY</div>
+            </div>
+            <div class="tetragram-cell" data-tetragram="1D33B">
+                <div class="tetragram-symbol">𝌻</div>
+                <div class="tetragram-name">UNITY</div>
+            </div>
+            <!-- Additional tetragrams could be added here -->
+        </section>
+        
+        <section id="journeys" class="tetragram-journey">
+            <h2 class="journey-title">TETRAGRAM JOURNEYS</h2>
+            <div class="tetragram-path">
+                <div class="path-node">
+                    <div class="path-symbol">𝌆</div>
+                    <div class="path-text">Begin at the Centre</div>
+                </div>
+                <div class="path-connector"></div>
+                <div class="path-node">
+                    <div class="path-symbol">𝌌</div>
+                    <div class="path-text">Rise in Ascent</div>
+                </div>
+                <div class="path-connector"></div>
+                <div class="path-node">
+                    <div class="path-symbol">𝌎</div>
+                    <div class="path-text">Branch Outward</div>
+                </div>
+                <div class="path-connector"></div>
+                <div class="path-node">
+                    <div class="path-symbol">𝌩</div>
+                    <div class="path-text">Find Strength</div>
+                </div>
+                <div class="path-connector"></div>
+                <div class="path-node">
+                    <div class="path-symbol">𝌺</div>
+                    <div class="path-text">Touch Eternity</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div class="modal" id="tetragramModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-symbol" id="modalSymbol">𝌆</div>
+            <h3 class="modal-title" id="modalTitle">TETRAGRAM FOR CENTRE</h3>
+            <div class="modal-description" id="modalDescription">
+                <p>The Tetragram for Centre represents the fundamental starting point of all journeys. It symbolizes balance, foundation, and the core essence from which all things extend. In ancient practice, this tetragram was consulted when seeking guidance about one's purpose or true path.</p>
+                <p>When this tetragram appears, it suggests a need to return to basics, to center oneself, and to recognize the fundamental truths that exist at the core of your current situation. It reminds us that stability comes from knowing where we stand.</p>
+                <p>In digital spaces, this tetragram invites contemplation of what truly matters among the noise of constant information.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>TETRAGRAMA &copy; 2025 | An exploration of ancient symbols in digital space</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Modal functionality
+        const modal = document.getElementById('tetragramModal');
+        const modalSymbol = document.getElementById('modalSymbol');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const closeModal = document.querySelector('.close-modal');
+        const tetragramCells = document.querySelectorAll('.tetragram-cell');
+        
+        // Tetragram descriptions (simplified for demo)
+        const tetragramData = {
+            "1D306": {
+                symbol: "𝌆",
+                name: "CENTRE",
+                description: `<p>The Tetragram for Centre represents the fundamental starting point of all journeys. It symbolizes balance, foundation, and the core essence from which all things extend. In ancient practice, this tetragram was consulted when seeking guidance about one's purpose or true path.</p>
+                <p>When this tetragram appears, it suggests a need to return to basics, to center oneself, and to recognize the fundamental truths that exist at the core of your current situation. It reminds us that stability comes from knowing where we stand.</p>
+                <p>In digital spaces, this tetragram invites contemplation of what truly matters among the noise of constant information.</p>`
+            },
+            "1D307": {
+                symbol: "𝌇",
+                name: "FULL CIRCLE",
+                description: `<p>The Tetragram for Full Circle embodies completion, wholeness, and the cyclical nature of existence. It represents the moment when an endeavor reaches its natural conclusion, only to begin anew in a different form.</p>
+                <p>This symbol reminds us that endings are merely transitions, and that all things in life move in cycles. When this tetragram appears, it suggests that a current phase is reaching completion, and you should prepare for the beginning of a new cycle.</p>
+                <p>In the digital realm, this tetragram invites reflection on how information and ideas continuously transform and return in new iterations.</p>`
+            },
+            "1D308": {
+                symbol: "𝌈",
+                name: "MIRED",
+                description: `<p>The Tetragram for Mired represents the experience of being stuck or entangled in difficult circumstances. It symbolizes challenges that seem to hold you in place, preventing forward movement.</p>
+                <p>This tetragram acknowledges the reality of obstacles and complications, but also contains wisdom about how to navigate through them. When it appears, it suggests examining what is truly holding you back, and finding the path of least resistance.</p>
+                <p>In digital contexts, this symbol reminds us of the feelings of overwhelm that can come from information overload.</p>`
+            },
+            "1D309": {
+                symbol: "𝌉",
+                name: "BARRIER",
+                description: `<p>The Tetragram for Barrier represents the boundaries, limits, and obstacles we encounter. Unlike being mired, which suggests entanglement, a barrier is clear and defined - it stands before you clearly.</p>
+                <p>This tetragram carries wisdom about respecting boundaries while also finding ways to overcome them when necessary. When it appears, it may indicate a need to assess whether a barrier is protecting you or limiting you.</p>
+                <p>In the digital world, this symbol invites contemplation of the boundaries between public and private, known and unknown.</p>`
+            },
+            "1D30A": {
+                symbol: "𝌊",
+                name: "KEEPING SMALL",
+                description: `<p>The Tetragram for Keeping Small embodies the virtue of modesty, conservation, and focused attention. It represents the power found in minimalism and simplicity.</p>
+                <p>This tetragram reminds us that bigger is not always better, and that there is wisdom in maintaining appropriate scale. When it appears, it suggests that restraint and careful attention to details may be more beneficial than expansion.</p>
+                <p>In digital spaces, this symbol encourages thoughtful curation rather than endless accumulation of information or connections.</p>`
+            },
+            // Additional tetragram descriptions would be added here
+            "1D321": {
+                symbol: "𝌡",
+                name: "CHANGE",
+                description: `<p>The Tetragram for Change represents transformation, evolution, and the constant flux of existence. It symbolizes the inevitable shifts that occur in all aspects of life.</p>
+                <p>This tetragram carries wisdom about adapting to new circumstances with grace and foresight. When it appears, it indicates that significant transformations are underway or imminent, and flexibility will be key to navigating them successfully.</p>
+                <p>In the digital realm, this symbol reflects the ever-evolving nature of technology and information, reminding us to remain adaptable.</p>`
+            },
+            "1D32A": {
+                symbol: "𝌪",
+                name: "PURITY",
+                description: `<p>The Tetragram for Purity represents clarity, authenticity, and truth unclouded by distortion. It symbolizes the essence of things when all unnecessary elements have been removed.</p>
+                <p>This tetragram carries wisdom about the value of clarity and honesty in all endeavors. When it appears, it suggests a need to simplify and clarify, removing complications and distractions to reveal what is essential.</p>
+                <p>In digital contexts, this symbol encourages seeking accurate information and genuine connections amidst the noise.</p>`
+            },
+            "1D33A": {
+                symbol: "𝌺",
+                name: "ETERNITY",
+                description: `<p>The Tetragram for Eternity represents the timeless, the enduring, and that which transcends immediate concerns. It symbolizes perspectives that extend beyond the present moment into deeper time.</p>
+                <p>This tetragram carries wisdom about taking the long view and considering the lasting impact of actions and choices. When it appears, it suggests stepping back to consider the broader context and longer-term implications of current situations.</p>
+                <p>In the digital world, this symbol invites contemplation of what endures beyond technological cycles and ephemeral content.</p>`
+            },
+            "1D33B": {
+                symbol: "𝌻",
+                name: "UNITY",
+                description: `<p>The Tetragram for Unity represents wholeness, harmony, and the interconnection of disparate elements. It symbolizes the bringing together of what was separate into coherent relationship.</p>
+                <p>This tetragram carries wisdom about integration and cooperation. When it appears, it suggests seeking ways to bridge differences and recognize fundamental connections between seemingly unrelated aspects of life.</p>
+                <p>In digital spaces, this symbol encourages finding meaningful patterns and connections within diverse streams of information.</p>`
+            }
+        };
+        
+        // Open modal with tetragram details
+        tetragramCells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const tetragramId = cell.getAttribute('data-tetragram');
+                const data = tetragramData[tetragramId] || {
+                    symbol: cell.querySelector('.tetragram-symbol').textContent,
+                    name: cell.querySelector('.tetragram-name').textContent,
+                    description: "<p>This ancient tetragram contains wisdom waiting to be fully understood. Its patterns reflect universal truths that connect across time and space.</p>"
+                };
+                
+                modalSymbol.textContent = data.symbol;
+                modalTitle.textContent = `TETRAGRAM FOR ${data.name}`;
+                modalDescription.innerHTML = data.description;
+                
+                modal.classList.add('show-modal');
+            });
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('show-modal');
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show-modal');
+            }
+        });
+    </script>
+</body>
+</html>
