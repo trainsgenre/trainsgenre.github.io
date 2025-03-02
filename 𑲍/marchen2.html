@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        canvas {
+            display: block;
+        }
+        .marcheen-text {
+            font-family: monospace;
+            color: rgba(0, 255, 0, 0.7);
+            position: absolute;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    <div id="marchen" class="marcheen-text"></div>
+
+<script>
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+const marchenDiv = document.getElementById('marchen');
+
+// Set canvas size
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Marchen script Unicode range (U+11C70 to U+11CBF)
+const marchenChars = Array.from({length: 0x50}, (_, i) => 
+    String.fromCodePoint(0x11C70 + i));
+
+// Wave parameters
+let phase = 0;
+const columns = Array(Math.floor(window.innerWidth / 20)).fill(0);
+const charSize = 20;
+
+function animate() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    columns.forEach((_, i) => {
+        const x = i * charSize;
+        const y = (Math.sin((i + phase) * 0.1) * 50 + canvas.height/2) + 
+                 (Math.sin(phase * 0.2 + i) * 20;
+        
+        // Chromatic aberration effect
+        ctx.fillStyle = `hsl(${(i * 2 + phase * 10) % 360}, 100%, 50%)`;
+        ctx.fillText(
+            marchenChars[Math.floor(Math.random() * marchenChars.length)],
+            x, 
+            y
+        );
+    });
+
+    phase += 0.1;
+    requestAnimationFrame(animate);
+}
+
+// Generate Marchen text pattern
+let marchenPattern = '';
+for(let i = 0; i < 1000; i++) {
+    marchenPattern += Math.random() > 0.95 ? 
+        marchenChars[Math.floor(Math.random() * marchenChars.length)] : 
+        ' ';
+}
+marchenDiv.textContent = marchenPattern.repeat(100);
+
+// Start animation
+ctx.font = '20px monospace';
+animate();
+
+// Add interactive color shift
+document.addEventListener('mousemove', e => {
+    document.body.style.background = `hsl(${(e.clientX / window.innerWidth) * 360}, 
+        70%, 
+        ${10 + (e.clientY / window.innerHeight) * 10}%)`;
+});
+</script>
+</body>
+</html>
