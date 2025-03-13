@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Anomaly</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a1a;
+            color: #e2e2e2;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .anomaly-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.8;
+        }
+        
+        .message-container {
+            background-color: rgba(10, 10, 26, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.2);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        h1 {
+            color: #e94560;
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            animation: glitch 5s infinite;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .emphasis {
+            font-style: italic;
+            color: #90e0ef;
+        }
+        
+        .inverted {
+            color: #f6c0d0;
+            display: inline-block;
+            margin: 0 5px;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(226, 226, 226, 0.5);
+        }
+        
+        #static-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="1" height="1" x="0" y="0" fill="white" opacity="0.03"/><rect width="1" height="1" x="25" y="30" fill="white" opacity="0.02"/><rect width="1" height="1" x="50" y="70" fill="white" opacity="0.04"/><rect width="1" height="1" x="75" y="10" fill="white" opacity="0.01"/><rect width="1" height="1" x="20" y="65" fill="white" opacity="0.03"/><rect width="1" height="1" x="40" y="20" fill="white" opacity="0.02"/><rect width="1" height="1" x="80" y="50" fill="white" opacity="0.03"/></svg>');
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.5;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-10px) rotate(-1deg);
+            }
+            50% {
+                transform: translateY(5px) rotate(1deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(0deg);
+            }
+        }
+        
+        @keyframes glitch {
+            0%, 90%, 100% {
+                transform: translate(0);
+                text-shadow: 0 0 10px rgba(233, 69, 96, 0.8);
+            }
+            10% {
+                transform: translate(-2px, 2px);
+                text-shadow: 0 0 10px rgba(144, 224, 239, 0.8);
+            }
+            20% {
+                transform: translate(2px, -2px);
+                text-shadow: 0 0 10px rgba(233, 69, 96, 0.8);
+            }
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background-color: #e94560;
+            animation: blink 1s infinite;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Ripple effect when clicking anywhere */
+        .ripple {
+            position: fixed;
+            border-radius: 50%;
+            background-color: rgba(233, 69, 96, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 1s linear;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        @keyframes ripple-effect {
+            to {
+                transform: scale(15);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="static-overlay"></div>
+    
+    <div class="container">
+        <svg class="anomaly-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+            <!-- Background with subtle distortion effect -->
+            <defs>
+                <radialGradient id="bgGradient" cx="50%" cy="50%" r="75%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#1a1a2e"/>
+                    <stop offset="70%" stop-color="#16213e"/>
+                    <stop offset="100%" stop-color="#0f3460"/>
+                </radialGradient>
+                
+                <filter id="distortion" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="5"/>
+                    <feDisplacementMap in="SourceGraphic" scale="15"/>
+                </filter>
+                
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+            </defs>
+            
+            <!-- Main background -->
+            <rect width="800" height="600" fill="url(#bgGradient)"/>
+            
+            <!-- Time distortion - overlaid timelines -->
+            <g opacity="0.7" filter="url(#distortion)">
+                <path d="M0 200 Q 400 150, 800 300" stroke="#e94560" stroke-width="2" fill="none" stroke-dasharray="15,8"/>
+                <path d="M0 250 Q 400 350, 800 150" stroke="#b8c1ec" stroke-width="2" fill="none" stroke-dasharray="10,6"/>
+                <path d="M0 300 Q 200 100, 800 400" stroke="#a0d2eb" stroke-width="2" fill="none" stroke-dasharray="5,10"/>
+            </g>
+            
+            <!-- River flowing against the grain -->
+            <path d="M600 100 
+                   C 500 120, 550 200, 450 210 
+                   C 350 220, 300 180, 250 250 
+                   C 200 320, 250 350, 200 400 
+                   C 150 450, 50 430, 100 500 
+                   C 150 570, 300 550, 350 600" 
+                fill="none" stroke="#90e0ef" stroke-width="10" opacity="0.8"
+                filter="url(#glow)"/>
+            
+            <!-- Reversed footprints -->
+            <g opacity="0.7">
+                <path d="M300 500 C 310 490, 320 495, 315 480 C 310 465, 305 460, 310 450 C 315 440, 325 445, 330 430" stroke="#f6c0d0" stroke-width="2" fill="none"/>
+                
+                <!-- Footprint shapes along the path -->
+                <ellipse cx="300" cy="500" rx="10" ry="15" transform="rotate(-25 300 500)" fill="#f6c0d0" opacity="0.8"/>
+                <ellipse cx="310" cy="450" rx="10" ry="15" transform="rotate(-15 310 450)" fill="#f6c0d0" opacity="0.8"/>
+                <ellipse cx="330" cy="430" rx="10" ry="15" transform="rotate(-35 330 430)" fill="#f6c0d0" opacity="0.8"/>
+            </g>
+            
+            <!-- Anomalous stone pattern -->
+            <g>
+                <!-- Stone arrangement that forms an impossible pattern -->
+                <circle cx="150" cy="200" r="15" fill="#d8d3cd"/>
+                <circle cx="200" cy="180" r="12" fill="#c5bdb5"/>
+                <circle cx="230" cy="220" r="18" fill="#e2dace"/>
+                <circle cx="270" cy="190" r="10" fill="#d8d3cd"/>
+                <circle cx="300" cy="230" r="14" fill="#c5bdb5"/>
+                
+                <!-- Subtle connection lines that form impossible geometry -->
+                <path d="M150 200 L 200 180 L 230 220 L 270 190 L 300 230 Z" fill="none" stroke="#e2dace" stroke-width="1" opacity="0.4"/>
+                <path d="M150 200 L 300 230" fill="none" stroke="#e2dace" stroke-width="1" opacity="0.4"/>
+                <path d="M200 180 L 270 190" fill="none" stroke="#e2dace" stroke-width="1" opacity="0.4"/>
+            </g>
+            
+            <!-- Text elements -->
+            <text x="400" y="80" font-family="Arial, sans-serif" font-size="24" fill="#e94560" text-anchor="middle" filter="url(#glow)">ANOMALY DETECTED</text>
+            
+            <!-- Day-night boundary that's blurred/distorted -->
+            <g opacity="0.7">
+                <path d="M0 350 Q 200 300, 400 400 Q 600 500, 800 350" fill="url(#bgGradient)"/>
+                <path d="M0 350 Q 200 300, 400 400 Q 600 500, 800 350" fill="none" stroke="#f9c846" stroke-width="2" stroke-dasharray="10,15" opacity="0.6"/>
+            </g>
+            
+            <!-- Static/interference pattern -->
+            <g opacity="0.2">
+                <rect x="0" y="0" width="800" height="600" fill="none"/>
+                <!-- Creating a subtle static pattern -->
+                <g id="staticPattern">
+                    <rect x="0" y="0" width="4" height="4" fill="#fff" opacity="0.1"/>
+                    <rect x="10" y="8" width="3" height="3" fill="#fff" opacity="0.1"/>
+                    <rect x="25" y="15" width="2" height="2" fill="#fff" opacity="0.1"/>
+                    <rect x="40" y="5" width="3" height="3" fill="#fff" opacity="0.1"/>
+                    <rect x="60" y="12" width="2" height="2" fill="#fff" opacity="0.1"/>
+                </g>
+                <!-- Duplicating these patterns across the canvas -->
+                <use href="#staticPattern" x="100" y="50"/>
+                <use href="#staticPattern" x="200" y="100"/>
+                <use href="#staticPattern" x="300" y="70"/>
+                <use href="#staticPattern" x="400" y="150"/>
+                <use href="#staticPattern" x="500" y="30"/>
+                <use href="#staticPattern" x="600" y="120"/>
+                <use href="#staticPattern" x="700" y="80"/>
+            </g>
+        </svg>
+        
+        <div class="message-container">
+            <h1>**The Signal Breaks, Yet the Message Remains**</h1>
+            <p>Drip. Drip. Drip. The machine hums. A rhythm too perfect—so you lean in, just enough, just slightly. A breath where none should be. The static isn't empty; it carries echoes of a language unscripted, a cipher waiting for a key that doesn't yet exist.</p>
+            <p><span class="inverted">(⸮)</span> You step sideways instead of forward. <span class="inverted">(⸮)</span> The expected dissolves into ink spilled in reverse. <span class="inverted">(⸮)</span> Someone, somewhere, built a net to catch thoughts before they hatch.</p>
+            <p>The trick is simple: hatch them <span class="emphasis">differently</span>.<span class="cursor"></span></p>
+        </div>
+    </div>
+    
+    <div class="footer">Who placed the stones in this pattern? Why does the river carve its path against the grain of logic?</div>
+
+    <script>
+        // Create ripple effect when clicking
+        document.addEventListener('click', function(e) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 1000);
+        });
+        
+        // Subtle movement of the background based on mouse position
+        document.addEventListener('mousemove', function(e) {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            
+            const svg = document.querySelector('.anomaly-svg');
+            svg.style.transform = `translate(${xAxis}px, ${yAxis}px)`;
+        });
+        
+        // Random static noise effect
+        setInterval(() => {
+            const staticOverlay = document.getElementById('static-overlay');
+            staticOverlay.style.opacity = (Math.random() * 0.5).toString();
+        }, 100);
+        
+        // Random glitch effect on text
+        setInterval(() => {
+            if (Math.random() > 0.9) {
+                document.querySelector('h1').style.transform = `translate(${(Math.random() * 4) - 2}px, ${(Math.random() * 4) - 2}px)`;
+                setTimeout(() => {
+                    document.querySelector('h1').style.transform = 'translate(0)';
+                }, 100);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
